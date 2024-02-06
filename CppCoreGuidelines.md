@@ -6468,8 +6468,15 @@ These operations do not throw.
     template<typename T>
     class Vector2 {
     public:
-        Vector2(Vector2&& a) noexcept { *this = a; }             // just use the copy
-        Vector2& operator=(Vector2&& a) noexcept { *this = a; }  // just use the copy
+        Vector(Vector&& a) :elem{a.elem}, sz{a.sz} { a.elem = nullptr; a.sz = 0; }
+        Vector& operator=(Vector&& a) {
+            if (&a != this) {
+                delete elem;
+                elem = a.elem; a.elem = nullptr;
+                sz   = a.sz;   a.sz   = 0;
+            }
+            return *this;
+        }
         // ...
     private:
         T* elem;
